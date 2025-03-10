@@ -1,0 +1,164 @@
+common:
+  s_n_trials: 50
+  l1_n_trials: 50
+  l2_n_trials: 50
+  epochs: 20
+  piriod: 10
+  depth: 5
+  n_jobs: 2
+  cv_n: 3
+  use_single_model: xgbreg
+  use_lv1_models:
+    - neuralnetreg
+    - svr
+    - xgbreg
+    - lgbreg
+    - catreg
+  use_lv2_model: lgbreg
+
+neuralnetreg:
+  lr: 0.01
+  # max_epochs: self.epochs
+  batch_size: 128
+  # module: CustomNeuralNetReg
+  input_dim: 10
+  hidden_dim_lst:
+    - 10
+  activation: relu
+  criterion: bceloss
+  optimizer: adam
+  device: cpu
+  # verbose: self.piriod
+  USE_OPTUNA_PRUNER: True
+  USE_EARLY_STOPPING: True
+
+  opt:
+    adam_lr_low: 1e-5
+    adam_lr_high: 1e-1
+    adam_lr_log: True
+    adam_betas1_low: 0.85
+    adam_betas1_high: 0.999
+    adam_betas2_low: 0.85
+    adam_betas2_high: 0.999
+
+    radam_lr_low: 1e-5
+    radam_lr_high: 1e-1
+    radam_lr_log: True
+    radam_betas1_low: 0.85
+    radam_betas1_high: 0.999
+    radam_betas2_low: 0.85
+    radam_betas2_high: 0.999
+
+    adagrad_lr_low: 1e-5
+    adagrad_lr_high: 1e-1
+    adagrad_lr_log: True
+    adagrad_lr_decay_low: 0.0
+    adagrad_lr_decay_high: 0.1
+    
+    rmsprop_lr_low: 1e-5
+    rmsprop_lr_high: 1e-1
+    rmsprop_lr_log: True
+    rmsprop_alpha_low: 1e-5
+    rmsprop_alpha_high: 0.99
+    rmsprop_alpha_log: True
+    rmsprop_weight_decay_low: 0.0
+    rmsprop_weight_decay_high: 0.1
+
+    hidden_dim_low: 4
+    hidden_dim_high: 512
+
+xgbreg:
+  # n_estimators: self.epochs
+  # max_depth: self.depth
+  # max_leaves: round(2**(self.depth)*0.7)
+  # learning_rate: 0.1*(1+0.5*((100-self.depth+1e-3)/100))
+  subsample: 0.8
+  colsample_bytree: 0.8
+  objective: reg:squarederror
+  grow_policy: depthwise
+  # n_jobs: self.n_jobs
+  booster: gbtree
+  verbosity: 0
+  device: cpu
+  # device: cuda
+  reg_alpha: 0.5
+  reg_lambda: 0.5
+  enable_categorical: True
+
+  USE_OPTUNA_PRUNER: True
+  USE_EARLY_STOPPING: True
+
+  opt:
+    max_leaves_low: 10
+    max_leaves_high: 100
+    learning_rate_low: 1e-2
+    learning_rate_high: 1e-1
+    reg_alpha_low: 3e-1
+    reg_alpha_high: 7e-1
+    reg_lambda_low: 3e-1
+    reg_lambda_high: 7e-1
+    subsample_low: 0.6
+    subsample_high: 1.0
+    colsample_bytree_low: 0.5
+    colsample_bytree_high: 1.0
+
+lgbreg:
+  # num_leaves: round(2**(self.depth)*0.7) # 2^(mad_depth)* 0.7
+  # max_depth: self.depth
+  # learning_rate: 0.1*(1+0.5*((100-self.epochs+1e-3)/100))
+  # n_estimators: self.epochs #100
+  subsample: 0.8
+  reg_alpha: 0.5
+  reg_lambda: 0.5
+  boosting_type: gbdt
+  objective: regression_l2
+  # n_jobs: self.n_jobs
+  # device_type: cuda
+  device: cpu
+  # device: cuda
+  verbose: 1
+
+  USE_OPTUNA_PRUNER: True
+  USE_EARLY_STOPPING: True
+
+  opt:
+    learning_rate_low: 1e-2
+    learning_rate_high: 1e-1
+    reg_alpha_low: 3e-1
+    reg_alpha_high: 7e-1
+    reg_lambda_low: 3e-1
+    reg_lambda_high: 7e-1
+    subsample_low: 0.6
+    subsample_high: 1.0
+    colsample_bytree_low: 0.5
+    colsample_bytree_high: 1.0
+
+catreg:
+  # n_estimators: self.epochs
+  # learning_rate: 0.1*(1+0.5*((100-self.epochs+1e-3)/100))
+  # max_depth: self.depth
+  l2_leaf_reg: 0.5
+  # max_leaves: round(2**(max_depth)*0.7)
+      # grow_policy: Lossguide　の場合のみ有効
+  loss_function: RMSE
+  task_type: CPU
+  USE_OPTUNA_PRUNER: True
+  USE_EARLY_STOPPING: False
+  
+  opt:
+    learning_rate_low: 1e-2
+    learning_rate_high: 1e-1
+    l2_leaf_reg_low: 3e-1
+    l2_leaf_reg_high: 7e-1
+    subsample_low: 0.6
+    subsample_high: 1.0
+
+
+
+
+
+
+
+
+
+
