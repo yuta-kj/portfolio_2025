@@ -1,0 +1,2 @@
+OPENAI_API_KEY = "" # 登録したOPENAI_API_KEY
+SERP_API_KEY = "" # 登録したSUER_API_KEY

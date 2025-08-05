@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LangChain株式会社 - AIチャットボット</title>
+    <style>
+      body {
+        font-family: "Roboto", Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: #f4f4f9;
+        color: #333;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 20px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        font-size: 2.2rem;
+        color: #4a90e2;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: bold;
+        color: #666;
+      }
+
+      input[type="text"] {
+        width: calc(100% - 20px);
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+      }
+
+      button {
+        width: 100%;
+        padding: 10px 20px;
+        background: #4a90e2;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: background 0.3s ease;
+      }
+
+      button:hover {
+        background: #357ab8;
+      }
+
+      .response {
+        margin-top: 30px;
+      }
+
+      .response-section {
+        margin-top: 20px;
+        padding: 15px;
+        background: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .response-section h2 {
+        margin-top: 0;
+        font-size: 1.5rem;
+        color: #4a90e2;
+        border-bottom: 2px solid #4a90e2;
+        padding-bottom: 5px;
+      }
+
+      ul {
+        padding-left: 20px;
+      }
+
+      ul li {
+        margin-bottom: 10px;
+        list-style-type: square;
+        color: #555;
+      }
+
+      ul li a {
+        color: #357ab8;
+        text-decoration: none;
+        transition: color 0.2s ease;
+      }
+
+      ul li a:hover {
+        color: #d9534f;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>LangChain株式会社 - AIチャットボット</h1>
+
+      <form id="questionForm">
+        <label for="question">質問を入力してください</label>
+        <input
+          type="text"
+          id="question"
+          name="question"
+          placeholder="例: LangChain株式会社の事業領域の最新ニュースを教えて"
+          required
+        />
+        <button type="submit">送信</button>
+      </form>
+
+      <div id="response" class="response">
+        <!-- 回答セクション -->
+        <div id="answerSection" class="response-section">
+          <h2>回答</h2>
+          <div id="answer"></div>
+        </div>
+
+        <!-- リンクセクション -->
+        <div id="linksSection" class="response-section">
+          <h2>関連リンク</h2>
+          <ul id="links"></ul>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document
+        .getElementById("questionForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          const question = document.getElementById("question").value;
+
+          fetch("/ask", {
+            method: "POST",
+            body: new URLSearchParams({ question: question }),
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              // 回答部分の更新
+              const answerDiv = document.getElementById("answer");
+              answerDiv.innerHTML = data.answer || "回答がありませんでした。";
+
+              // リンク部分の更新
+              const linksUl = document.getElementById("links");
+              linksUl.innerHTML = ""; // リストを初期化
+
+              // data.linksを改行で分割してリストとして扱う
+              const linksArray =
+                typeof data.links === "string"
+                  ? data.links.split("\n")
+                  : data.links;
+
+              if (linksArray && linksArray.length > 0) {
+                linksArray.forEach((linkText) => {
+                  if (!linkText.trim()) return; // 空行をスキップ
+
+                  const li = document.createElement("li");
+                  const a = document.createElement("a");
+
+                  const urlMatch = linkText.match(/https?:\/\/[^\s]+/);
+                  const url = urlMatch ? urlMatch[0] : "#";
+
+                  a.href = url;
+                  a.textContent = linkText;
+                  a.target = "_blank";
+                  li.appendChild(a);
+                  linksUl.appendChild(li);
+                });
+              } else {
+                linksUl.innerHTML =
+                  "<li>関連リンクが見つかりませんでした。</li>";
+              }
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
+        });
+    </script>
+  </body>
+</html>
