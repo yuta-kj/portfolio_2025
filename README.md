@@ -46,3 +46,7 @@ zillow\_prize # kaggle zillow prizeコンペ
 
 lang\_chatbot\_app # RAG, AIエージェントを活用したチャットボット検索アプリ
 
+ruby_qanda # rubyによる簡易的なQandA掲示板
+
+
+
